@@ -138,6 +138,71 @@
   flex-shrink: 0;
 }
 
+.camera-thumb-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: zoom-in;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.camera-thumb-btn:hover .camera-thumb,
+.camera-thumb-btn:focus-visible .camera-thumb {
+  outline: 2px solid #3878dc;
+  outline-offset: 2px;
+}
+
+.lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 10, 13, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+}
+
+.lightbox-content {
+  background: #14171c;
+  border: 1px solid #262b33;
+  border-radius: 8px;
+  padding: 10px;
+  max-width: min(90vw, 960px);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lightbox-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  color: #c7ccd1;
+  font-size: 13px;
+}
+
+.lightbox-header button {
+  background: none;
+  border: none;
+  color: #9aa3ad;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lightbox-image {
+  display: block;
+  max-width: 100%;
+  max-height: calc(90vh - 48px);
+  object-fit: contain;
+  border-radius: 4px;
+}
+
 .camera-prediction {
   flex: 1;
   min-width: 0;

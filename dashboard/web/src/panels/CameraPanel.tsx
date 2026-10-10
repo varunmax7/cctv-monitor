@@ -44,10 +44,12 @@ const PROB_LABELS: [string, string, string][] = [
 export function CameraPanel({ camId, sliderTimeUtc, onClose }: CameraPanelProps) {
   const [items, setItems] = useState<CctvObservation[]>([])
   const [gap, setGap] = useState<string | undefined>()
+  const [lightboxOpen, setLightboxOpen] = useState(false)
 
   useEffect(() => {
     setItems([])
     setGap(undefined)
+    setLightboxOpen(false)
     api
       .cctvObservations(camId)
       .then((r) => {
@@ -62,6 +64,15 @@ export function CameraPanel({ camId, sliderTimeUtc, onClose }: CameraPanelProps)
     if (!sliderTimeUtc) return items[items.length - 1]
     return nearestByTime(items, sliderTimeUtc, (i) => i.ts_utc) ?? items[items.length - 1]
   }, [items, sliderTimeUtc])
+
+  useEffect(() => {
+    if (!lightboxOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [lightboxOpen])
 
   const timelineData = useMemo(
     () =>
@@ -82,7 +93,14 @@ export function CameraPanel({ camId, sliderTimeUtc, onClose }: CameraPanelProps)
       </div>
       {current ? (
         <div className="camera-row">
-          <img src={current.thumb_url} alt={camId} className="camera-thumb" />
+          <button
+            type="button"
+            className="camera-thumb-btn"
+            onClick={() => setLightboxOpen(true)}
+            aria-label="View full-size image"
+          >
+            <img src={current.thumb_url} alt={camId} className="camera-thumb" />
+          </button>
           <div className="camera-prediction">
             <span
               className="badge badge-severity"
@@ -184,6 +202,21 @@ export function CameraPanel({ camId, sliderTimeUtc, onClose }: CameraPanelProps)
 
       ) : (
         <p className="muted">{gap ?? 'Loading…'}</p>
+      )}
+      {lightboxOpen && current && (
+        <div className="lightbox-backdrop" onClick={() => setLightboxOpen(false)}>
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <div className="lightbox-header">
+              <span>
+                {camId} &middot; visual flood severity proxy &middot; {fmtICT(current.ts_utc)}
+              </span>
+              <button type="button" onClick={() => setLightboxOpen(false)} aria-label="close">
+                &times;
+              </button>
+            </div>
+            <img src={current.thumb_url} alt={camId} className="lightbox-image" />
+          </div>
+        </div>
       )}
       {timelineData.length > 1 && (
         <>
